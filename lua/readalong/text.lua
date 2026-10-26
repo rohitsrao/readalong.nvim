@@ -58,7 +58,7 @@ end
 
 ---@param lines string[] buffer lines
 ---@param first integer 0-based row of lines[1]
----@param opts { markdown: boolean, skip_code_blocks: boolean, soft: integer, hard: integer }
+---@param opts { markdown: boolean, skip_code_blocks: boolean, soft: integer, hard: integer, filter: (fun(line: string): string)? }
 function M.extract(lines, first, opts)
   local words, segments = {}, {}
   local parts, len, seg_words = {}, 0, {}
@@ -107,6 +107,11 @@ function M.extract(lines, first, opts)
   for i, line in ipairs(lines) do
     local lnum = first + i - 1
     local skip = false
+    if opts.filter then
+      local filtered = opts.filter(line)
+      -- Only use filters that keep the byte length, or word columns would point at wrong text.
+      if type(filtered) == "string" and #filtered == #line then line = filtered end
+    end
 
     if opts.markdown then
       local f = line:match("^%s*(```)") or line:match("^%s*(~~~)")

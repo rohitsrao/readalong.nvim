@@ -121,6 +121,16 @@ local function start_session(buf, win, words, segments, idx)
   b.start(session, idx)
 end
 
+-- Per-filetype functions that blank out text which should not be spoken (see register_filter).
+local filters = {}
+
+--- Register fn(line) -> line for buffers of filetype ft. It must replace unspoken text with
+--- spaces and keep the line's byte length, so word positions still match the buffer.
+--- For example dotplan.nvim uses it to skip [[file links]] in .plan files.
+function M.register_filter(ft, fn)
+  filters[ft] = fn
+end
+
 local function extract(buf, first, last)
   local ft = vim.bo[buf].filetype
   local o = config.options
@@ -129,6 +139,7 @@ local function extract(buf, first, last)
     skip_code_blocks = o.skip_code_blocks,
     soft = o.segment_chars.soft,
     hard = o.segment_chars.hard,
+    filter = filters[ft],
   })
 end
 

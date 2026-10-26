@@ -138,6 +138,19 @@ paragraphs.
 **macOS `say`:** `say --interactive` redraws the text for each word it speaks, marking the
 current word. The plugin reads that output and highlights the marked word.
 
+## Skipping text per filetype
+
+Other plugins can keep text out of the speech for a filetype. The function gets each line and
+returns it with the unspoken parts replaced by spaces, keeping the same length:
+
+```lua
+require("readalong").register_filter("plan", function(line)
+  return (line:gsub("%[%[[^%]]+%]%]", function(l) return string.rep(" ", #l) end))
+end)
+```
+
+[dotplan.nvim](https://github.com/rohitsrao/dotplan.nvim) does this to skip file links in `.plan` files.
+
 ## Cost tips
 
 - Use `:Readalong estimate` before reading a long file.
