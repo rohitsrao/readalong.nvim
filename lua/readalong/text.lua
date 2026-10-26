@@ -79,6 +79,12 @@ function M.extract(lines, first, opts)
   end
 
   local function add(token, lnum, col)
+    -- Punctuation cut off by masked syntax ("**word**." -> "word  .") goes back on the word.
+    if #parts > 0 and token:find("^[.,;:!?)]+$") then
+      parts[#parts] = parts[#parts] .. token
+      len = len + #token
+      return
+    end
     local offset = #parts > 0 and len + 1 or 0
     parts[#parts + 1] = token
     len = offset + #token

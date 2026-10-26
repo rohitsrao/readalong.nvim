@@ -65,3 +65,6 @@ if path then
   end
   print("ok   all plan word ranges non-empty")
 end
+
+local _, psegs = text.extract({ "Marked **Changes requested**. Done." }, 0, opts)
+check("punctuation after emphasis stays on the word", psegs[1].text == "Marked Changes requested. Done.")
