@@ -24,6 +24,16 @@ M.defaults = {
   -- Text is split into segments (paragraphs, headings, list items). Long paragraphs are split
   -- at the first sentence end after `soft` characters, or at any word after `hard` characters.
   segment_chars = { soft = 500, hard = 1000 },
+  -- Keymaps set by setup(). Use `keymaps = false` to set none, or set one entry to false to skip it.
+  keymaps = {
+    toggle = "<leader>ap", -- play from cursor / pause / resume
+    stop = "<leader>as",
+    next = "<leader>an", -- next paragraph
+    prev = "<leader>ab", -- previous paragraph
+    faster = "<leader>a+",
+    slower = "<leader>a-",
+    play_selection = "<leader>ap", -- visual mode: read the selected lines
+  },
 
   unreal = {
     -- API key as a string or a function returning one. Defaults to $UNREAL_SPEECH_API_KEY.

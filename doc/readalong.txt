@@ -41,7 +41,19 @@ require("readalong").setup({opts})   Optional; see |readalong-config|.
   .set_voice({name}) .set_backend({name}) .estimate()
   .status()        Statusline text, e.g. "▶ unreal 1.2x", or "".
 
-The plugin defines no keymaps.
+                                                           *readalong-keymaps*
+setup() sets these keymaps (change them with the `keymaps` option, set one to
+false to skip it, or set `keymaps = false` to set none):
+
+  <leader>ap   Play from the cursor / pause / resume
+               (visual mode: read the selected lines)
+  <leader>as   Stop
+  <leader>an   Next paragraph
+  <leader>ab   Previous paragraph
+  <leader>a+   Faster
+  <leader>a-   Slower
+
+Without setup() no keymaps are set. Call it after setting |mapleader|.
 
 ==============================================================================
 CONFIGURATION                                              *readalong-config*
@@ -55,6 +67,12 @@ Defaults: >lua
     playback_rate = 1.0,
     rate_step = 0.1,
     segment_chars = { soft = 500, hard = 1000 },
+    keymaps = {
+      toggle = "<leader>ap", stop = "<leader>as",
+      next = "<leader>an", prev = "<leader>ab",
+      faster = "<leader>a+", slower = "<leader>a-",
+      play_selection = "<leader>ap",
+    },
     unreal = {
       api_key = nil,         -- string or function; default $UNREAL_SPEECH_API_KEY
       api_url = "https://api.v8.unrealspeech.com",

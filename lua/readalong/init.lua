@@ -23,7 +23,7 @@ local function resolve_backend()
   return b
 end
 
-function M.setup(opts)
+local function init(opts)
   config.set(opts)
   did_setup = true
   hl.define_groups()
@@ -32,8 +32,33 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("VimLeavePre", { group = group, callback = function() M.stop() end })
 end
 
+local function set_keymaps(keys)
+  if not keys then return end
+  local maps = {
+    { "n", keys.toggle, M.toggle, "play / pause" },
+    { "n", keys.stop, M.stop, "stop" },
+    { "n", keys.next, M.next, "next paragraph" },
+    { "n", keys.prev, M.prev, "previous paragraph" },
+    { "n", keys.faster, M.faster, "faster" },
+    { "n", keys.slower, M.slower, "slower" },
+    { "x", keys.play_selection, ":Readalong play<CR>", "read selection" },
+  }
+  for _, m in ipairs(maps) do
+    if m[2] then
+      vim.keymap.set(m[1], m[2], m[3], { silent = true, desc = "Readalong: " .. m[4] })
+    end
+  end
+end
+
+--- Configure the plugin and set its keymaps (see |readalong-config|). Calling it is optional:
+--- without it the :Readalong command works with the defaults, but no keymaps are set.
+function M.setup(opts)
+  init(opts)
+  set_keymaps(config.options.keymaps)
+end
+
 local function ensure_setup()
-  if not did_setup then M.setup() end
+  if not did_setup then init() end
 end
 
 local Session = {}

@@ -29,7 +29,8 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim):
 { "rohitsrao/readalong.nvim", opts = {} }
 ```
 
-Calling `setup()` is optional; the `:Readalong` command works with the defaults.
+`setup()` sets the default keymaps below. Without it, the `:Readalong` command still works, but
+no keymaps are set. Call it after setting `mapleader`.
 
 Put your Unreal Speech API key in your shell profile (the plugin never writes it to disk):
 
@@ -53,17 +54,23 @@ Run `:checkhealth readalong` to check everything is found.
 | `:Readalong backend auto\|unreal\|say` | Switch backend |
 | `:Readalong estimate` | Characters this buffer would send to Unreal Speech, and how many are already cached |
 
-The plugin sets no keymaps. For example:
+### Keymaps
+
+`setup()` sets these (the `a` is for "aloud"):
+
+| Key | Action |
+|---|---|
+| `<leader>ap` | Play from the cursor / pause / resume (visual mode: read the selection) |
+| `<leader>as` | Stop |
+| `<leader>an` / `<leader>ab` | Next / previous paragraph |
+| `<leader>a+` / `<leader>a-` | Faster / slower |
+
+Change or turn off any of them with the `keymaps` option, or set `keymaps = false` to set none:
 
 ```lua
-local ra = require("readalong")
-vim.keymap.set("n", "<leader>tp", ra.toggle, { desc = "Readalong: play / pause" })
-vim.keymap.set("n", "<leader>ts", ra.stop, { desc = "Readalong: stop" })
-vim.keymap.set("n", "<leader>tn", ra.next, { desc = "Readalong: next paragraph" })
-vim.keymap.set("n", "<leader>tb", ra.prev, { desc = "Readalong: previous paragraph" })
-vim.keymap.set("n", "<leader>t=", ra.faster, { desc = "Readalong: faster" })
-vim.keymap.set("n", "<leader>t-", ra.slower, { desc = "Readalong: slower" })
-vim.keymap.set("x", "<leader>tp", ":Readalong play<CR>", { desc = "Readalong: read selection" })
+require("readalong").setup({
+  keymaps = { toggle = "<leader>rr", next = false },
+})
 ```
 
 `require("readalong").status()` returns a short string such as `▶ unreal 1.2x` for your statusline.
@@ -81,6 +88,15 @@ require("readalong").setup({
   playback_rate = 1.0,
   rate_step = 0.1,
   segment_chars = { soft = 500, hard = 1000 }, -- how long paragraphs are split
+  keymaps = {              -- false (here or per key) to skip
+    toggle = "<leader>ap",
+    stop = "<leader>as",
+    next = "<leader>an",
+    prev = "<leader>ab",
+    faster = "<leader>a+",
+    slower = "<leader>a-",
+    play_selection = "<leader>ap", -- visual mode
+  },
   unreal = {
     api_key = nil,         -- string or function; defaults to $UNREAL_SPEECH_API_KEY
     api_url = "https://api.v8.unrealspeech.com",
