@@ -1,0 +1,77 @@
+*readalong.txt*   Read buffers aloud with word highlighting
+
+==============================================================================
+CONTENTS                                                   *readalong*
+
+Read a buffer aloud and highlight each word as it is spoken, using Unreal
+Speech (https://unrealspeech.com) or macOS `say` as a fallback.
+
+Requirements: Neovim 0.10+. For Unreal Speech: an API key in
+$UNREAL_SPEECH_API_KEY, `mpv` and `curl`. For `say`: macOS.
+
+Check your setup with |:checkhealth| readalong.
+
+==============================================================================
+COMMANDS                                                   *:Readalong*
+
+:Readalong                 Start reading from the cursor; pause / resume if
+                           already reading.
+:'<,'>Readalong            Read the selected lines.
+:Readalong play            Start (again) from the cursor.
+:Readalong pause           Pause.
+:Readalong resume          Resume.
+:Readalong toggle          Pause or resume, or start if not reading.
+:Readalong stop            Stop and clear the highlight.
+:Readalong next            Skip to the next paragraph, heading or list item.
+:Readalong prev            Back to the start of the paragraph, or the
+                           previous one when already near its start.
+:Readalong faster          Increase playback speed by `rate_step`.
+:Readalong slower          Decrease playback speed by `rate_step`.
+:Readalong voice {name}    Use {name} for the active backend.
+:Readalong backend {name}  Switch to "auto", "unreal" or "say".
+:Readalong estimate        Show how many characters reading the buffer would
+                           send to Unreal Speech, and how many are cached.
+
+==============================================================================
+LUA API                                                    *readalong-api*
+
+require("readalong").setup({opts})   Optional; see |readalong-config|.
+  .play({range})   Start reading; {range} is { line1, line2 } (1-based).
+  .toggle() .pause() .resume() .stop() .next() .prev() .faster() .slower()
+  .set_voice({name}) .set_backend({name}) .estimate()
+  .status()        Statusline text, e.g. "▶ unreal 1.2x", or "".
+
+The plugin defines no keymaps.
+
+==============================================================================
+CONFIGURATION                                              *readalong-config*
+
+Defaults: >lua
+  require("readalong").setup({
+    backend = "auto",        -- "auto" | "unreal" | "say"
+    fallback_to_say = true,
+    follow_cursor = true,
+    skip_code_blocks = true,
+    playback_rate = 1.0,
+    rate_step = 0.1,
+    segment_chars = { soft = 500, hard = 1000 },
+    unreal = {
+      api_key = nil,         -- string or function; default $UNREAL_SPEECH_API_KEY
+      api_url = "https://api.v8.unrealspeech.com",
+      voice = "Sierra",
+      bitrate = "192k",
+      speed = 0,
+      pitch = 1.0,
+      chunk_chars = 2000,
+      cache_dir = vim.fn.stdpath("cache") .. "/readalong",
+      mpv = "mpv",
+    },
+    say = { voice = nil, rate = 175 },
+  })
+<
+==============================================================================
+HIGHLIGHTS                                                 *readalong-highlights*
+
+ReadalongWord      The word being read. Linked to |hl-IncSearch| by default.
+
+ vim:tw=78:ts=8:ft=help:norl:
